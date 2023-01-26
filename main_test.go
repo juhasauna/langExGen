@@ -7,8 +7,8 @@ func Test_main(t *testing.T) {
 		name string
 		f    func(*testing.T)
 	}{
-		// {"makeQuietAudio", makeQuietAudioTest},
-		{"generateMp3", generateMp3Test},
+		{"generateLanguageLearningMp3", generateLanguageLearningMp3Test},
+		// {"generateMp3", generateMp3Test},
 	}
 
 	for _, tt := range tests {
@@ -18,6 +18,11 @@ func Test_main(t *testing.T) {
 
 func generateMp3Test(t *testing.T) {
 	if err := generateMp3(); err != nil {
+		t.Error(err)
+	}
+}
+func generateLanguageLearningMp3Test(t *testing.T) {
+	if err := generateLanguageLearningMp3(); err != nil {
 		t.Error(err)
 	}
 }
