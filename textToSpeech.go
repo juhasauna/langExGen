@@ -11,8 +11,9 @@ import (
 	"time"
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
+	texttospeechpb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	"google.golang.org/api/option"
-	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
+	// texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
 )
 
 type inputItem struct {
@@ -25,21 +26,26 @@ type inputItem struct {
 }
 
 type voices struct {
-	se []string
-	en string
-	fi string
+	se         []string
+	tw         []string
+	twNorepeat string
+	en         string
+	fi         string
 }
 
 func newVoices() voices {
 	return voices{se: []string{"sv-SE-Wavenet-B", "sv-SE-Wavenet-C", "sv-SE-Wavenet-D", "sv-SE-Wavenet-E", "sv-SE-Wavenet-A"},
-		en: "en-US-Wavenet-G",
-		fi: "fi-FI-Wavenet-A",
+		// tw: []string{"cmn-TW-Wavenet-A", "cmn-TW-Wavenet-B", "cmn-TW-Wavenet-C"},
+		tw:         []string{"cmn-TW-Wavenet-A", "cmn-TW-Wavenet-C"}, // "cmn-TW-Wavenet-B" is too fast
+		twNorepeat: "cmn-TW-Wavenet-B",
+		en:         "en-US-Wavenet-G",
+		fi:         "fi-FI-Wavenet-A",
 	}
 }
 
 func generateMp3() error {
 	ctx := context.Background()
-	opt := option.WithCredentialsFile("C:/Users/FIJUSAU/go/src/firebase/serviceAccount.json")
+	opt := option.WithCredentialsFile("C:/Users/FIJUSAU/OneDrive - ABB/Code/mogebrowser/firebase/serviceAccount.json")
 
 	client, err := texttospeech.NewClient(ctx, opt)
 	if err != nil {
@@ -62,7 +68,7 @@ func generateMp3() error {
 	completeAudio := []byte{}
 	for i, v := range audioInputs {
 		reqAudio := audioRequest(v, "en-US")
-		respAudio, err := client.SynthesizeSpeech(ctx, &reqAudio)
+		respAudio, err := client.SynthesizeSpeech(ctx, reqAudio)
 		if err != nil {
 			return err
 		}
@@ -85,11 +91,11 @@ func generateMp3() error {
 
 	return nil
 }
-func generateLanguageLearningMp3() error {
+func generateLanguageLearningMp3se() error {
 	rand.Seed(time.Now().UnixNano())
 	randInt := rand.Int()
 	ctx := context.Background()
-	opt := option.WithCredentialsFile("C:/Users/FIJUSAU/go/src/firebase/serviceAccount.json")
+	opt := option.WithCredentialsFile("C:/Users/FIJUSAU/OneDrive - ABB/Code/mogebrowser/firebase/serviceAccount.json")
 
 	client, err := texttospeech.NewClient(ctx, opt)
 	if err != nil {
@@ -140,7 +146,7 @@ func generateLanguageLearningMp3() error {
 
 		reqAudio := audioRequest(v, "sv-SE")
 
-		respAudio, err := client.SynthesizeSpeech(ctx, &reqAudio)
+		respAudio, err := client.SynthesizeSpeech(ctx, reqAudio)
 		if err != nil {
 			return err
 		}
@@ -160,12 +166,11 @@ func generateLanguageLearningMp3() error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func makeQuietAudio(length int) []byte {
-	length = int(float64(length) * 1.6)
+	length = int(float64(length) * 1.1)
 	bytes, err := os.ReadFile("C:/Users/FIJUSAU/go/src/langExGen/audio/space.mp3")
 	if err != nil {
 		log.Fatal(err)
@@ -179,7 +184,7 @@ func makeQuietAudio(length int) []byte {
 	return quietBytes
 }
 
-func audioRequest(v inputItem, langCode string) texttospeechpb.SynthesizeSpeechRequest {
+func audioRequest(v inputItem, langCode string) *texttospeechpb.SynthesizeSpeechRequest {
 	req := texttospeechpb.SynthesizeSpeechRequest{
 		Input: &texttospeechpb.SynthesisInput{
 			InputSource: &texttospeechpb.SynthesisInput_Text{Text: v.sentence},
@@ -195,5 +200,5 @@ func audioRequest(v inputItem, langCode string) texttospeechpb.SynthesizeSpeechR
 			SpeakingRate:  v.speakingRate,
 		},
 	}
-	return req
+	return &req
 }

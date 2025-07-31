@@ -6,7 +6,7 @@ import (
 
 func main() {
 	fmt.Println("hi from main")
-	// err := GenerateCustomMp3()
+	// err := generateMandarin()
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }

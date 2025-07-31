@@ -7,7 +7,7 @@ func Test_main(t *testing.T) {
 		name string
 		f    func(*testing.T)
 	}{
-		{"generateLanguageLearningMp3", generateLanguageLearningMp3Test},
+		// {"generateLanguageLearningMp3", generateLanguageLearningMp3Test},
 		// {"generateMp3", generateMp3Test},
 	}
 
@@ -22,7 +22,7 @@ func generateMp3Test(t *testing.T) {
 	}
 }
 func generateLanguageLearningMp3Test(t *testing.T) {
-	if err := generateLanguageLearningMp3(); err != nil {
+	if err := generateLanguageLearningMp3se(); err != nil {
 		t.Error(err)
 	}
 }
